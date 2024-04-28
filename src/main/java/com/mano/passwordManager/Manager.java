@@ -58,6 +58,10 @@ public class Manager {
         }
     }
 
+    public Map<String, Map<String, String>> getDomains() {
+        return domains;
+    }
+
     public String getCredentials(final String domain, final String username) {
         final Map<String, String> passwords = domains.get(domain);
         final String password = decrypt(passwords.get(username));
