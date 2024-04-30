@@ -1,4 +1,6 @@
-package com.mano.passwordManager;
+package com.mano.passwordManager.util;
+
+import com.mano.passwordManager.storage.*;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -16,27 +18,27 @@ import javax.crypto.spec.SecretKeySpec;
  * A simple passwords manager
  */
 public class Manager {
-    private static String user_key = "key"; // To be changed
-
-    private byte[] generateKeyFromPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashedBytes = md.digest(password.getBytes());
-            byte[] keyBytes = Arrays.copyOf(hashedBytes, 32);
-
-            return keyBytes;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-
-            return null;
-        }
-    }
+    private final String user_key = "key"; // To be changed
 
     private final Map<String, Map<String, String>> domains;
-    private final byte[] SECRET_KEY;
 
-    public Manager() {
-        domains = new HashMap<String, Map<String, String>>();
+    private final byte[] SECRET_KEY;
+    // private final String filePath;
+    private Storage storage;
+
+    public Manager(String path) {
+        // filePath = path;
+        storage = new Storage(path);
+
+        if (storage.fileExists) {
+            domains = storage.readPasswordsFromStorage();
+
+            System.out.println("File Found");
+        } else {
+            domains = new HashMap<String, Map<String, String>>();
+
+            System.out.println("File Not Found (A new one needs to be created)");
+        }
         SECRET_KEY = generateKeyFromPassword(user_key);
     }
 
@@ -46,7 +48,12 @@ public class Manager {
         password = encrypt(password);
         if (domains.containsKey(domain)) {
             final Map<String, String> passwords = domains.get(domain);
-            passwords.put(username, password);
+            if (!passwords.containsKey(username)) {
+                passwords.put(username, password);
+            } else {
+                // TODO: Make the logic for when a username already exists
+                System.out.println("Username already exists");
+            }
 
             // System.out.println("Domain alredy exists");
         } else {
@@ -81,6 +88,24 @@ public class Manager {
         return sk_bytes.length;
     }
 
+    public void saveToFile() {
+        storage.savePasswordsToStorage(domains);
+    }
+
+    private byte[] generateKeyFromPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = md.digest(password.getBytes());
+            byte[] keyBytes = Arrays.copyOf(hashedBytes, 32);
+
+            return keyBytes;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
     private String encrypt(final String input) {
         try {
             final Cipher cipher = Cipher.getInstance("AES/CFB/PKCS5Padding");
@@ -91,7 +116,6 @@ public class Manager {
 
             final byte[] encryptedBytes = cipher.doFinal(input.getBytes());
 
-            // Combine IV and ciphertext
             byte[] combined = new byte[iv.getIV().length + encryptedBytes.length];
             System.arraycopy(iv.getIV(), 0, combined, 0, iv.getIV().length);
             System.arraycopy(encryptedBytes, 0, combined, iv.getIV().length, encryptedBytes.length);
