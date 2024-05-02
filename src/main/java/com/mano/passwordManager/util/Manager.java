@@ -18,18 +18,17 @@ import javax.crypto.spec.SecretKeySpec;
  * A simple passwords manager
  */
 public class Manager {
-    private final String user_key = "key"; // To be changed
-
+    private final String userKey;
     private final Map<String, Map<String, String>> domains;
 
     private final byte[] SECRET_KEY;
     // private final String filePath;
     private Storage storage;
 
-    public Manager(String path) {
+    public Manager(String path, String key) {
         // filePath = path;
         storage = new Storage(path);
-
+        userKey = key;
         if (storage.fileExists) {
             domains = storage.readPasswordsFromStorage();
 
@@ -39,7 +38,7 @@ public class Manager {
 
             System.out.println("File Not Found (A new one needs to be created)");
         }
-        SECRET_KEY = generateKeyFromPassword(user_key);
+        SECRET_KEY = generateKeyFromPassword(userKey);
     }
 
     public void addCredentials(final String domain,

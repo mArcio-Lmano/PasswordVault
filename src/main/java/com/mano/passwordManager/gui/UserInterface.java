@@ -2,7 +2,7 @@ package com.mano.passwordManager.gui;
 
 public interface UserInterface {
 
-    void initialize();
+    void initialize(String key);
 
     void update();
 

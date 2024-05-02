@@ -1,6 +1,7 @@
 *.class
-target/
 *.json
+*.hash
+target/
 .classpath
 .project
 .settings/

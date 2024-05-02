@@ -27,8 +27,13 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.15.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.16.0</version>
+      <version>2.15.3</version>
     </dependency>
   </dependencies>
 
@@ -80,8 +85,10 @@
           <version>3.2.0</version>
           <configuration>
             <mainClass>com.mano.passwordManager.App</mainClass>
-            </configuration>
-          </plugin>
+            <classpathScope>compile</classpathScope>
+            <includePluginDependencies>true</includePluginDependencies>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>

@@ -1,6 +1,10 @@
 package com.mano.passwordManager;
 
+import java.awt.GraphicsEnvironment;
+import java.util.Scanner;
+
 import com.mano.passwordManager.gui.Gui;
+import com.mano.passwordManager.util.Login;
 
 /**
  * Hello world!
@@ -8,9 +12,22 @@ import com.mano.passwordManager.gui.Gui;
  */
 public class App {
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Login login = new Login();
+        if (login.key == null) {
+            System.out.println("Closing App, Wrong Password");
+            return;
+        }
+
         Gui gui = new Gui();
 
-        gui.initialize();
+        gui.initialize(login.key);
+    }
+
+    private static void printFonts() {
+        String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+
+        for (int i = 0; i < fonts.length; i++) {
+            System.out.println(fonts[i]);
+        }
     }
 }
