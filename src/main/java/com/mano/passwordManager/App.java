@@ -1,7 +1,6 @@
 package com.mano.passwordManager;
 
 import java.awt.GraphicsEnvironment;
-import java.util.Scanner;
 
 import com.mano.passwordManager.gui.Gui;
 import com.mano.passwordManager.util.Login;
@@ -12,15 +11,16 @@ import com.mano.passwordManager.util.Login;
  */
 public class App {
     public static void main(String[] args) {
-        Login login = new Login();
-        if (login.key == null) {
-            System.out.println("Closing App, Wrong Password");
-            return;
-        }
+        // Login login = new Login();
+        // if (login.key == null) {
+        // System.out.println("Closing App, Wrong Password");
+        // return;
+        // }
 
         Gui gui = new Gui();
 
-        gui.initialize(login.key);
+        // gui.initialize(login.key);
+        gui.initialize("key");
     }
 
     private static void printFonts() {
