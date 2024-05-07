@@ -15,6 +15,6 @@ public class GuiTest {
     @Test
     public void testInitialize() {
         Gui gui = new Gui();
-        gui.initialize();
+        gui.initialize("key");
     }
 }

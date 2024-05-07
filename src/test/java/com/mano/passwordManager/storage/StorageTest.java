@@ -15,7 +15,7 @@ public class StorageTest {
     @Test
     public void testStorageSave() {
         // NOTE: No file named "testStorage.json" is saved
-        Manager manager = new Manager("src/test/json/testStorage.json");
+        Manager manager = new Manager("src/test/json/testStorage.json", "key");
         manager.addCredentials("FaryTail", "SnowWhite", "Happy");
         manager.addCredentials("FaryTail", "Darling", "1243125156141");
         manager.addCredentials("Rust", "Quantum", "ADAPT-VQC");

@@ -22,11 +22,9 @@ public class Manager {
     private final Map<String, Map<String, String>> domains;
 
     private final byte[] SECRET_KEY;
-    // private final String filePath;
-    private Storage storage;
+    private final Storage storage;
 
-    public Manager(String path, String key) {
-        // filePath = path;
+    public Manager(final String path, final String key) {
         storage = new Storage(path);
         userKey = key;
         if (storage.fileExists) {
@@ -53,14 +51,20 @@ public class Manager {
                 // TODO: Make the logic for when a username already exists
                 System.out.println("Username already exists");
             }
-
-            // System.out.println("Domain alredy exists");
         } else {
             final Map<String, String> passwords = new HashMap<String, String>();
             passwords.put(username, password);
             domains.put(domain, passwords);
+        }
+    }
 
-            // System.out.println("Domain was created just now");
+    public void removeCredentials(final String domain, final String username) {
+        System.out.println("Hello");
+
+        Map<String, String> domainToRemove = domains.get(domain);
+        domainToRemove.remove(username);
+        if (domainToRemove.isEmpty()) {
+            domains.remove(domain);
         }
     }
 
@@ -75,7 +79,7 @@ public class Manager {
         return password;
     }
 
-    public String testEncription(String input) {
+    public String testEncription(final String input) {
         final String cypher = encrypt(input);
         final String plain_text = decrypt(cypher);
         return plain_text;
@@ -91,14 +95,14 @@ public class Manager {
         storage.savePasswordsToStorage(domains);
     }
 
-    private byte[] generateKeyFromPassword(String password) {
+    private byte[] generateKeyFromPassword(final String password) {
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashedBytes = md.digest(password.getBytes());
-            byte[] keyBytes = Arrays.copyOf(hashedBytes, 32);
+            final MessageDigest md = MessageDigest.getInstance("SHA-256");
+            final byte[] hashedBytes = md.digest(password.getBytes());
+            final byte[] keyBytes = Arrays.copyOf(hashedBytes, 32);
 
             return keyBytes;
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             e.printStackTrace();
 
             return null;
@@ -115,7 +119,7 @@ public class Manager {
 
             final byte[] encryptedBytes = cipher.doFinal(input.getBytes());
 
-            byte[] combined = new byte[iv.getIV().length + encryptedBytes.length];
+            final byte[] combined = new byte[iv.getIV().length + encryptedBytes.length];
             System.arraycopy(iv.getIV(), 0, combined, 0, iv.getIV().length);
             System.arraycopy(encryptedBytes, 0, combined, iv.getIV().length, encryptedBytes.length);
 
@@ -128,16 +132,16 @@ public class Manager {
 
     private String decrypt(final String input) {
         try {
-            byte[] inputBytes = Base64.getDecoder().decode(input);
+            final byte[] inputBytes = Base64.getDecoder().decode(input);
 
-            byte[] ivBytes = Arrays.copyOfRange(inputBytes, 0, 16);
+            final byte[] ivBytes = Arrays.copyOfRange(inputBytes, 0, 16);
             final Cipher cipher = Cipher.getInstance("AES/CFB/PKCS5Padding");
             final SecretKeySpec secretKey = new SecretKeySpec(SECRET_KEY, "AES");
             final IvParameterSpec iv = new IvParameterSpec(ivBytes);
 
             cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
 
-            byte[] decryptedBytes = cipher.doFinal(inputBytes, 16, inputBytes.length - 16);
+            final byte[] decryptedBytes = cipher.doFinal(inputBytes, 16, inputBytes.length - 16);
 
             return new String(decryptedBytes);
         } catch (final Exception e) {
@@ -148,11 +152,11 @@ public class Manager {
 
     private byte[] generateIV() {
         try {
-            SecureRandom random = SecureRandom.getInstanceStrong();
-            byte[] iv = new byte[16];
+            final SecureRandom random = SecureRandom.getInstanceStrong();
+            final byte[] iv = new byte[16];
             random.nextBytes(iv);
             return iv;
-        } catch (NoSuchAlgorithmException e) {
+        } catch (final NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
         }
