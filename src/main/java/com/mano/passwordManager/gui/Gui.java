@@ -37,10 +37,13 @@ public class Gui implements UserInterface {
     private JPanel actionsPanel;
     private JPanel domainButtonPanel;
     private JPanel contentPanel;
-    // private CardLayout cardLayout;
 
     private Font fontPlain = new Font("JetBrainsMono NF", Font.PLAIN, 20);
     private Font fontBold = new Font("JetBrainsMono NF", Font.BOLD, 20);
+    private Color colorBlack = new Color(34, 40, 49);
+    private Color colorGray = new Color(49, 54, 63);
+    private Color colorTeal = new Color(118, 171, 174);
+    private Color colorWhite = new Color(238, 238, 238);
     private String key;
 
     @Override
@@ -56,10 +59,10 @@ public class Gui implements UserInterface {
 
         domainButtonPanel = new JPanel();
         domainButtonPanel.setLayout(new BoxLayout(domainButtonPanel, 1));
-        domainButtonPanel.setBackground(Color.GRAY);
+        domainButtonPanel.setBackground(colorGray);
 
         contentPanel = new JPanel();
-        contentPanel.setBackground(Color.LIGHT_GRAY);
+        contentPanel.setBackground(colorBlack);
         contentPanel.setLayout(new CardLayout());
 
         JScrollPane verticalScroll = new JScrollPane(contentPanel);
@@ -75,21 +78,26 @@ public class Gui implements UserInterface {
         }
 
         JPanel titlePanel = new JPanel();
+        titlePanel.setBackground(colorGray);
         JLabel title = new JLabel("Password Vault");
         title.setFont(fontBold);
         title.setBorder(new EmptyBorder(5, 0, 5, 0));
+        title.setForeground(colorWhite);
         titlePanel.add(title);
 
         JPanel containerPanel = new JPanel(new BorderLayout());
+        containerPanel.setBackground(colorGray);
         containerPanel.add(domainButtonPanel, BorderLayout.WEST);
         containerPanel.add(verticalScroll, BorderLayout.CENTER);
 
         createActionsPanel(manager, frame);
         JPanel leftSidePanel = new JPanel(new BorderLayout());
+        leftSidePanel.setBackground(colorGray);
         leftSidePanel.add(actionsPanel, BorderLayout.NORTH);
         leftSidePanel.add(containerPanel, BorderLayout.CENTER);
 
         JPanel rightSidePanel = new JPanel(new BorderLayout());
+        rightSidePanel.setBackground(colorGray);
         rightSidePanel.setBorder(new EmptyBorder(0, 10, 0, 10));
         rightSidePanel.add(titlePanel, BorderLayout.NORTH);
         rightSidePanel.add(contentPanel);
@@ -130,6 +138,8 @@ public class Gui implements UserInterface {
         JButton quitButton = new JButton("Quit");
         quitButton.setFont(fontBold);
         quitButton.setFocusPainted(false);
+        quitButton.setBackground(colorTeal);
+        quitButton.setForeground(colorWhite);
         quitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -145,58 +155,27 @@ public class Gui implements UserInterface {
 
         JButton domaiButton = new JButton(domain.strip());
         domaiButton.setFont(fontPlain);
-        domaiButton.setBackground(Color.WHITE);
+        domaiButton.setBackground(colorTeal);
         domaiButton.setFocusPainted(false);
+        domaiButton.setForeground(colorWhite);
         domaiButton.setVerticalTextPosition(SwingConstants.CENTER);
         domaiButton.setHorizontalTextPosition(SwingConstants.CENTER);
         domaiButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JPanel panelContentPanel = new JPanel(new GridBagLayout());
+                panelContentPanel.setBackground(colorBlack);
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.insets = new Insets(5, 5, 5, 5);
 
                 for (Map.Entry<String, String> credential : credentials.entrySet()) {
-                    String username = credential.getKey();
-                    String password = manager.getCredentials(domain, username);
-                    JLabel label = new JLabel(
-                            "<html><b>Username:</b> " + username + "<br><b>Password:</b> " + password + "</html>");
-                    label.setFont(fontPlain);
-                    ImageIcon staticIcon = new ImageIcon("assets/trash_static.gif");
-                    ImageIcon gifIcon = new ImageIcon("assets/trash.gif");
-                    JButton delete = new JButton(staticIcon);
-                    delete.setBackground(Color.WHITE);
-                    delete.setFocusPainted(false);
-                    delete.addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseEntered(MouseEvent e) {
-                            delete.setIcon(gifIcon);
-                        }
-
-                        @Override
-                        public void mouseExited(MouseEvent e) {
-                            delete.setIcon(staticIcon);
-                        }
-                    });
-                    delete.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            panelContentPanel.remove(label);
-                            manager.removeCredentials(domain, username);
-                            panelContentPanel.remove(delete);
-                            manager.saveToFile();
-                            update();
-                        }
-                    });
-                    gbc.anchor = GridBagConstraints.WEST;
-                    panelContentPanel.add(label, gbc);
-                    gbc.gridx++;
-                    panelContentPanel.add(delete, gbc);
-                    gbc.anchor = GridBagConstraints.EAST;
-                    gbc.gridy++;
-                    gbc.gridx = 0;
+                    domainButtonAction(domain,
+                            credential,
+                            manager,
+                            panelContentPanel,
+                            gbc);
                 }
                 contentPanel.removeAll();
                 JScrollPane verticalScroll = new JScrollPane(panelContentPanel);
@@ -210,11 +189,59 @@ public class Gui implements UserInterface {
         domainButtonPanel.add(domaiButton);
     }
 
+    private void domainButtonAction(String domain,
+            Map.Entry<String, String> credential,
+            Manager manager,
+            JPanel panelContentPanel,
+            GridBagConstraints gbc) {
+
+        String username = credential.getKey();
+        String password = manager.getCredentials(domain, username);
+        JLabel label = new JLabel(
+                "<html><b>Username:</b> " + username + "<br><b>Password:</b> " + password + "</html>");
+        label.setFont(fontPlain);
+        label.setForeground(colorWhite);
+        ImageIcon staticIcon = new ImageIcon("assets/trash_static.gif");
+        ImageIcon gifIcon = new ImageIcon("assets/trash.gif");
+        JButton delete = new JButton(staticIcon);
+        delete.setBackground(Color.WHITE);
+        delete.setFocusPainted(false);
+        delete.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                delete.setIcon(gifIcon);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                delete.setIcon(staticIcon);
+            }
+        });
+        delete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                panelContentPanel.remove(label);
+                manager.removeCredentials(domain, username);
+                panelContentPanel.remove(delete);
+                manager.saveToFile();
+                update();
+            }
+        });
+        gbc.anchor = GridBagConstraints.WEST;
+        panelContentPanel.add(label, gbc);
+        gbc.gridx++;
+        panelContentPanel.add(delete, gbc);
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridy++;
+        gbc.gridx = 0;
+    }
+
     private void createActionsPanel(Manager manager, JFrame frameToQuit) {
         JButton plusButton = createAddCredentialButton(manager);
         JButton quitButton = createQuitButton(frameToQuit);
 
         actionsPanel = new JPanel();
+        actionsPanel.setBackground(colorGray);
         actionsPanel.add(plusButton);
         actionsPanel.add(quitButton);
     }
@@ -223,75 +250,87 @@ public class Gui implements UserInterface {
         JButton plusButton = new JButton("+");
         plusButton.setFont(fontPlain);
         plusButton.setFocusPainted(false);
+        plusButton.setBackground(colorTeal);
+        plusButton.setForeground(colorWhite);
         plusButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame addCredentialsFrame = new JFrame("Add Credential");
-                JPanel addCredentialsPanel = new JPanel();
-                addCredentialsPanel.setBackground(Color.GRAY);
-
-                CredentialPanel domainCredentialPanel = createCredentialPanel("Domain");
-                CredentialPanel userCredentialPanel = createCredentialPanel("Username");
-                CredentialPanel passCredentialPanel = createCredentialPanel("Password");
-
-                JPanel domainPanel = domainCredentialPanel.getJPanel();
-                JPanel userPanel = userCredentialPanel.getJPanel();
-                JPanel passPanel = passCredentialPanel.getJPanel();
-
-                JButton addCredentialButton = new JButton("Add");
-                addCredentialButton.setFont(fontBold);
-                addCredentialButton.setFocusPainted(false);
-                addCredentialButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String domain = domainCredentialPanel.getJTextField().getText();
-                        String username = userCredentialPanel.getJTextField().getText();
-                        String password = passCredentialPanel.getJTextField().getText();
-                        if (!domain.equals("") && !username.equals("") && !password.equals("")) {
-                            manager.addCredentials(domain, username, password);
-                            manager.saveToFile();
-                            addCredentialsFrame.dispose();
-                            update();
-
-                        } else {
-                            JOptionPane.showMessageDialog(frame,
-                                    "One of the enteries is empty!",
-                                    "",
-                                    JOptionPane.ERROR_MESSAGE);
-                        }
-
-                    }
-                });
-
-                JButton quitButton = createQuitButton(addCredentialsFrame);
-
-                JPanel addCredentialsButtonsPanel = new JPanel();
-                addCredentialsButtonsPanel.setBackground(Color.GRAY);
-                addCredentialsButtonsPanel.add(addCredentialButton);
-                addCredentialsButtonsPanel.add(quitButton);
-
-                addCredentialsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 424242, 5));
-                addCredentialsPanel.add(domainPanel);
-                addCredentialsPanel.add(userPanel);
-                addCredentialsPanel.add(passPanel);
-                addCredentialsPanel.add(addCredentialsButtonsPanel);
-
-                addCredentialsFrame.getContentPane().add(addCredentialsPanel);
-                addCredentialsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                addCredentialsFrame.setVisible(true);
-
+                addCredentialButtonAction(manager);
             }
         });
 
         return plusButton;
     }
 
+    private void addCredentialButtonAction(Manager manager) {
+
+        JFrame addCredentialsFrame = new JFrame("Add Credential");
+        JPanel addCredentialsPanel = new JPanel();
+        addCredentialsPanel.setBackground(colorBlack);
+
+        CredentialPanel domainCredentialPanel = createCredentialPanel("Domain");
+        CredentialPanel userCredentialPanel = createCredentialPanel("Username");
+        CredentialPanel passCredentialPanel = createCredentialPanel("Password");
+
+        JPanel domainPanel = domainCredentialPanel.getJPanel();
+        domainPanel.setBackground(colorBlack);
+        JPanel userPanel = userCredentialPanel.getJPanel();
+        userPanel.setBackground(colorBlack);
+        JPanel passPanel = passCredentialPanel.getJPanel();
+        passPanel.setBackground(colorBlack);
+
+        JButton addCredentialButton = new JButton("Add");
+        addCredentialButton.setFont(fontBold);
+        addCredentialButton.setFocusPainted(false);
+        addCredentialButton.setBackground(colorTeal);
+        addCredentialButton.setForeground(colorWhite);
+        addCredentialButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String domain = domainCredentialPanel.getJTextField().getText();
+                String username = userCredentialPanel.getJTextField().getText();
+                String password = passCredentialPanel.getJTextField().getText();
+                if (!domain.equals("") && !username.equals("") && !password.equals("")) {
+                    manager.addCredentials(domain, username, password);
+                    manager.saveToFile();
+                    addCredentialsFrame.dispose();
+                    update();
+
+                } else {
+                    JOptionPane.showMessageDialog(frame,
+                            "One of the enteries is empty!",
+                            "",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+            }
+        });
+
+        JButton quitButton = createQuitButton(addCredentialsFrame);
+
+        JPanel addCredentialsButtonsPanel = new JPanel();
+        addCredentialsButtonsPanel.setBackground(colorBlack);
+        addCredentialsButtonsPanel.add(addCredentialButton);
+        addCredentialsButtonsPanel.add(quitButton);
+
+        addCredentialsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 424242, 5));
+        addCredentialsPanel.add(domainPanel);
+        addCredentialsPanel.add(userPanel);
+        addCredentialsPanel.add(passPanel);
+        addCredentialsPanel.add(addCredentialsButtonsPanel);
+
+        addCredentialsFrame.getContentPane().add(addCredentialsPanel);
+        addCredentialsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        addCredentialsFrame.setVisible(true);
+    }
+
     private CredentialPanel createCredentialPanel(String credential) {
         JTextField credentialTextField = new JTextField();
         credentialTextField.setFont(fontPlain);
+        credentialTextField.setColumns(20);
         JLabel credentialLabel = new JLabel(credential + ": ");
         credentialLabel.setFont(fontBold);
-        credentialTextField.setColumns(20);
+        credentialLabel.setForeground(colorWhite);
         JPanel credentialPanel = new JPanel();
         credentialPanel.add(credentialLabel);
         credentialPanel.add(credentialTextField);
