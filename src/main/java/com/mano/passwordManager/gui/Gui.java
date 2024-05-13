@@ -318,10 +318,20 @@ public class Gui implements UserInterface {
                 String password = passCredentialPanel.getJTextField().getText();
                 if (!domain.equals("") && !username.equals("") && !password.equals("")) {
                     manager.addCredentials(domain, username, password);
+                    if (manager.overrideFlag == 1) {
+                        int dialogButton = JOptionPane.YES_NO_OPTION;
+                        int dialogResult = JOptionPane.showConfirmDialog(frame,
+                                "Would You Like to override the previous password?", "Warning", dialogButton);
+                        if (dialogResult == JOptionPane.YES_OPTION) {
+                            manager.addCredentials(domain, username, password);
+                        } else {
+                            manager.overrideFlag = 0;
+                        }
+                    }
                     manager.saveToFile();
+
                     addCredentialsFrame.dispose();
                     update();
-
                 } else {
                     JOptionPane.showMessageDialog(frame,
                             "One of the enteries is empty!",

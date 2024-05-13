@@ -23,18 +23,16 @@ public class Manager {
 
     private final byte[] SECRET_KEY;
     private final Storage storage;
+    public Integer overrideFlag;
 
     public Manager(final String path, final String key) {
         storage = new Storage(path);
         userKey = key;
+        overrideFlag = 0;
         if (storage.fileExists) {
             domains = storage.readPasswordsFromStorage();
-
-            System.out.println("File Found");
         } else {
             domains = new HashMap<String, Map<String, String>>();
-
-            System.out.println("File Not Found (A new one needs to be created)");
         }
         SECRET_KEY = generateKeyFromPassword(userKey);
     }
@@ -48,8 +46,13 @@ public class Manager {
             if (!passwords.containsKey(username)) {
                 passwords.put(username, password);
             } else {
-                // TODO: Make the logic for when a username already exists
-                System.out.println("Username already exists");
+                if (overrideFlag == 1) {
+                    passwords.put(username, password);
+                    domains.put(domain, passwords);
+                    overrideFlag = 0;
+                } else {
+                    overrideFlag = 1;
+                }
             }
         } else {
             final Map<String, String> passwords = new HashMap<String, String>();
@@ -59,8 +62,6 @@ public class Manager {
     }
 
     public void removeCredentials(final String domain, final String username) {
-        System.out.println("Hello");
-
         Map<String, String> domainToRemove = domains.get(domain);
         domainToRemove.remove(username);
         if (domainToRemove.isEmpty()) {

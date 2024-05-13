@@ -30,7 +30,6 @@ public class Storage {
     private void lookForFile() {
         fileExists = false;
         if (file.exists()) {
-            System.out.println("File Exists");
             fileExists = true;
         }
     }
