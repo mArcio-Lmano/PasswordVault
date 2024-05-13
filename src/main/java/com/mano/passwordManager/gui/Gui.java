@@ -67,6 +67,7 @@ public class Gui implements UserInterface {
 
         JScrollPane verticalScroll = new JScrollPane(contentPanel);
         verticalScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        verticalScroll.getVerticalScrollBar().setUnitIncrement(16);
 
         Manager manager = new Manager("src/test/json/testPassWords.json", keyIn);
         Map<String, Map<String, String>> domains = manager.getDomains();
@@ -180,6 +181,7 @@ public class Gui implements UserInterface {
                 contentPanel.removeAll();
                 JScrollPane verticalScroll = new JScrollPane(panelContentPanel);
                 verticalScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                verticalScroll.getVerticalScrollBar().setUnitIncrement(16);
                 verticalScroll.setBorder(BorderFactory.createEmptyBorder());
                 contentPanel.add(verticalScroll, domain);
                 contentPanel.revalidate();
@@ -193,14 +195,38 @@ public class Gui implements UserInterface {
             Map.Entry<String, String> credential,
             Manager manager,
             JPanel panelContentPanel,
-            GridBagConstraints gbc) {
-
+            GridBagConstraints gbcMainPanel) {
+        JPanel credentialPanel = new JPanel(new GridBagLayout());
+        credentialPanel.setBackground(colorBlack);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         String username = credential.getKey();
         String password = manager.getCredentials(domain, username);
-        JLabel label = new JLabel(
-                "<html><b>Username:</b> " + username + "<br><b>Password:</b> " + password + "</html>");
-        label.setFont(fontPlain);
-        label.setForeground(colorWhite);
+
+        JLabel usernameLabel = new JLabel("Username:");
+        usernameLabel.setFont(fontBold);
+        usernameLabel.setForeground(colorWhite);
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setFont(fontBold);
+        passwordLabel.setForeground(colorWhite);
+
+        JTextField usernameEntry = new JTextField(username);
+        usernameEntry.setEditable(false);
+        usernameEntry.setFont(fontPlain);
+        JTextField passwordEntry = new JTextField(password);
+        passwordEntry.setEditable(false);
+        passwordEntry.setFont(fontPlain);
+
+        credentialPanel.add(usernameLabel, gbc);
+        gbc.gridx += 1;
+        credentialPanel.add(usernameEntry, gbc);
+        gbc.gridx = 0;
+        gbc.gridy += 1;
+        credentialPanel.add(passwordLabel, gbc);
+        gbc.gridx += 1;
+        credentialPanel.add(passwordEntry, gbc);
+
         ImageIcon staticIcon = new ImageIcon("assets/trash_static.gif");
         ImageIcon gifIcon = new ImageIcon("assets/trash.gif");
         JButton delete = new JButton(staticIcon);
@@ -220,20 +246,20 @@ public class Gui implements UserInterface {
         delete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                panelContentPanel.remove(label);
+                panelContentPanel.remove(credentialPanel);
                 manager.removeCredentials(domain, username);
                 panelContentPanel.remove(delete);
                 manager.saveToFile();
                 update();
             }
         });
-        gbc.anchor = GridBagConstraints.WEST;
-        panelContentPanel.add(label, gbc);
-        gbc.gridx++;
-        panelContentPanel.add(delete, gbc);
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.gridy++;
-        gbc.gridx = 0;
+        gbcMainPanel.anchor = GridBagConstraints.WEST;
+        panelContentPanel.add(credentialPanel, gbcMainPanel);
+        gbcMainPanel.gridx++;
+        panelContentPanel.add(delete, gbcMainPanel);
+        gbcMainPanel.anchor = GridBagConstraints.EAST;
+        gbcMainPanel.gridy++;
+        gbcMainPanel.gridx = 0;
     }
 
     private void createActionsPanel(Manager manager, JFrame frameToQuit) {
