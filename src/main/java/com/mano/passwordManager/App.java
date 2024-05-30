@@ -11,23 +11,14 @@ import com.mano.passwordManager.util.Login;
  */
 public class App {
     public static void main(String[] args) {
-        // Login login = new Login();
-        // if (login.key == null) {
-        // System.out.println("Closing App, Wrong Password");
-        // return;
-        // }
+        Login login = new Login();
+        if (login.key == null) {
+            System.out.println("Closing App, Wrong Password");
+            return;
+        }
 
         Gui gui = new Gui();
 
-        // gui.initialize(login.key);
-        gui.initialize("key");
-    }
-
-    private static void printFonts() {
-        String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-
-        for (int i = 0; i < fonts.length; i++) {
-            System.out.println(fonts[i]);
-        }
+        gui.initialize(login.key);
     }
 }
